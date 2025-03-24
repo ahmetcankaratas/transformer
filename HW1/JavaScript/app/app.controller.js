@@ -68,12 +68,22 @@ class Controller {
       this._uploadButton.disabled = true;
       this._view.showLoading();
 
+      console.log(
+        `Processing file: ${file.name} (${file.type}, ${file.size} bytes)`
+      );
       const data = await this._model.readFile(file);
+
+      console.log(`File processed successfully:`, {
+        headers: data.headers.length,
+        rows: data.rows.length,
+      });
+
       this._model.data = data;
       this._view.displaySchedule(file);
 
       this._uploadButton.disabled = false;
     } catch (error) {
+      console.error("File upload error:", error);
       this._view.showError(error.message);
       this._fileInput.value = "";
       this._uploadButton.disabled = true;

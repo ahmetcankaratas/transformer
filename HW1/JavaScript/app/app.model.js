@@ -100,10 +100,55 @@ class Model {
       throw new Error("Excel file is empty or invalid.");
     }
 
-    const headers = jsonData[0].map((header) => header.toString().trim());
+    // Find the first non-empty row to use as headers
+    let headerRowIndex = 0;
+    while (headerRowIndex < jsonData.length) {
+      if (
+        jsonData[headerRowIndex] &&
+        jsonData[headerRowIndex].some((cell) => cell)
+      ) {
+        break;
+      }
+      headerRowIndex++;
+    }
+
+    if (headerRowIndex >= jsonData.length) {
+      throw new Error("Could not find valid headers in Excel file.");
+    }
+
+    // Process headers
+    const headers = jsonData[headerRowIndex].map((header) =>
+      header !== undefined && header !== null ? header.toString().trim() : ""
+    );
+
+    // Find maximum number of columns
+    const maxCols = Math.max(1, headers.length);
+
+    // Process data rows
     const rows = jsonData
-      .slice(1)
-      .map((row) => row.map((cell) => (cell || "").toString().trim()));
+      .slice(headerRowIndex + 1)
+      .filter(
+        (row) =>
+          row &&
+          row.some(
+            (cell) =>
+              cell !== undefined &&
+              cell !== null &&
+              cell.toString().trim() !== ""
+          )
+      )
+      .map((row) => {
+        // Ensure each row has the same number of columns as headers
+        const processedRow = [];
+        for (let i = 0; i < maxCols; i++) {
+          const cell =
+            i < row.length && row[i] !== undefined && row[i] !== null
+              ? row[i].toString().trim()
+              : "";
+          processedRow.push(cell);
+        }
+        return processedRow;
+      });
 
     return { headers, rows };
   }
@@ -167,6 +212,7 @@ class Model {
    */
   set data(data) {
     if (!this._validateData(data)) {
+      console.error("Data validation failed:", data);
       throw new Error("Invalid table data format.");
     }
 
@@ -190,58 +236,29 @@ class Model {
    */
   _validateData(data) {
     if (!data || !Array.isArray(data.headers) || !Array.isArray(data.rows)) {
+      console.error("Data structure invalid:", data);
+      return false;
+    }
+
+    // Ensure we have at least one header
+    if (data.headers.length === 0) {
+      console.error("No headers found");
       return false;
     }
 
     // Check if all rows have the same number of columns as headers
-    return data.rows.every(
+    const valid = data.rows.every(
       (row) => Array.isArray(row) && row.length === data.headers.length
     );
-  }
 
-  /**
-   * @returns {string}
-   */
-  transformToHTML() {
-    if (!this._headers || !this._rows) {
-      return '<div class="alert alert-warning">No data available</div>';
+    if (!valid) {
+      console.error(
+        "Row length mismatch with headers:",
+        data.headers.length,
+        data.rows.map((r) => r.length)
+      );
     }
 
-    let html = '<table class="table table-bordered table-striped table-hover">';
-
-    // Add headers
-    html += '<thead class="table-light"><tr>';
-    for (const header of this._headers) {
-      html += `<th>${this._escapeHTML(header)}</th>`;
-    }
-    html += "</tr></thead>";
-
-    // Add body
-    html += "<tbody>";
-    for (const row of this._rows) {
-      html += "<tr>";
-      for (const cell of row) {
-        html += `<td>${this._escapeHTML(cell)}</td>`;
-      }
-      html += "</tr>";
-    }
-    html += "</tbody></table>";
-
-    return html;
-  }
-
-  /**
-   * @private
-   * @param {string} unsafe
-   * @returns {string}
-   */
-  _escapeHTML(unsafe) {
-    return unsafe
-      .toString()
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#039;");
+    return valid;
   }
 }

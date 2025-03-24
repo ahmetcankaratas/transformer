@@ -22,6 +22,14 @@ A web-based application that transforms PDF and Excel course schedules into HTML
     ├── app.controller.js # Main application controller
 ```
 
+## MVC Architecture
+
+The application follows the Model-View-Controller (MVC) design pattern with clear separation of concerns:
+
+- **Model**: Handles data processing and business logic
+- **View**: Manages the presentation layer and user interface
+- **Controller**: Coordinates between Model and View
+
 ## UML Class Diagrams
 
 ### Class Relationships
@@ -53,11 +61,11 @@ classDiagram
         +get data()
         +set data(value)
         +clear()
-        +transformToHTML()
         -_readPdfFile(file)
         -_readExcelFile(file)
         -_processPdfContent(textContent)
         -_processExcelData(jsonData)
+        -_validateData(data)
         -_getFileTypeFromName(fileName)
     }
 
@@ -71,6 +79,8 @@ classDiagram
         +set model(value)
         +initialize()
         +displaySchedule(file)
+        +renderTable()
+        -_generateTableHTML(data)
         +showFileInfo(file)
         +hideFileInfo()
         +showError(message)
@@ -112,11 +122,11 @@ classDiagram
         +get data() Object
         +set data(Object) void
         +clear() void
-        +transformToHTML() string
         -_readPdfFile(File) Promise~void~
         -_readExcelFile(File) Promise~void~
         -_processPdfContent(Object) void
         -_processExcelData(Array) void
+        -_validateData(Object) boolean
         -_getFileTypeFromName(string) string
     }
 ```
@@ -139,11 +149,14 @@ classDiagram
         +set model(Model) void
         +initialize() void
         +displaySchedule(File) void
+        +renderTable() string
+        -_generateTableHTML(Object) string
         +clearFeedback() void
         +showFileInfo(File) void
         +hideFileInfo() void
         +showError(string) void
         +showLoading() void
+        -_escapeHtml(string) string
     }
 ```
 

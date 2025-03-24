@@ -56,11 +56,51 @@ class View {
     }
 
     try {
-      return this._model.transformToHTML();
+      const data = this._model.data;
+      return this._generateTableHTML(data);
     } catch (error) {
       console.error("Error rendering table:", error);
-      return '<div class="alert alert-danger">Error rendering table</div>';
+      return `<div class="alert alert-danger">Error rendering table: ${this._escapeHtml(
+        error.message
+      )}</div>`;
     }
+  }
+
+  /**
+   * @private
+   * @param {ParsedData} data
+   * @returns {string}
+   */
+  _generateTableHTML(data) {
+    const { headers, rows } = data;
+
+    if (!headers || !rows || headers.length === 0) {
+      console.warn("No data available for HTML transformation");
+      return '<div class="alert alert-warning">No data available</div>';
+    }
+
+    let html = '<table class="table table-bordered table-striped table-hover">';
+
+    // Add headers
+    html += '<thead class="table-light"><tr>';
+    for (const header of headers) {
+      html += `<th>${this._escapeHtml(header || "")}</th>`;
+    }
+    html += "</tr></thead>";
+
+    // Add body
+    html += "<tbody>";
+    for (const row of rows) {
+      html += "<tr>";
+      for (let i = 0; i < headers.length; i++) {
+        const cell = i < row.length ? row[i] : "";
+        html += `<td>${this._escapeHtml(cell || "")}</td>`;
+      }
+      html += "</tr>";
+    }
+    html += "</tbody></table>";
+
+    return html;
   }
 
   /**
@@ -199,7 +239,11 @@ class View {
    * @returns {string}
    */
   _escapeHtml(unsafe) {
+    if (unsafe === undefined || unsafe === null) {
+      return "";
+    }
     return unsafe
+      .toString()
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
