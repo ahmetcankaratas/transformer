@@ -20,6 +20,7 @@ class Controller {
   }
 
   /**
+   * @method _setupEventListeners
    * @private
    * @returns {void}
    */
@@ -36,6 +37,7 @@ class Controller {
   }
 
   /**
+   * @method _handleFileSelect
    * @private
    * @returns {void}
    */
@@ -48,6 +50,7 @@ class Controller {
   }
 
   /**
+   * @method _handleFileUpload
    * @private
    * @async
    * @returns {Promise<void>}
