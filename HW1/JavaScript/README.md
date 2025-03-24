@@ -34,10 +34,10 @@ classDiagram
     View --> Controller : provides user interface
 
     class Controller {
-        -Model model
-        -View view
-        -HTMLInputElement fileInput
-        -HTMLButtonElement uploadButton
+        -Model _model
+        -View _view
+        -HTMLInputElement _fileInput
+        -HTMLButtonElement _uploadButton
         +initialize()
         -_setupEventListeners()
         -_handleFileSelect()
@@ -47,13 +47,13 @@ classDiagram
     class Model {
         -pdfjsLib pdfLib
         -XLSX XLSX
-        -headers
-        -rows
+        -_headers
+        -_rows
         +readFile(file)
-        +setData(headers, rows)
-        +getData()
-        +clearData()
-        +toHtml()
+        +get data()
+        +set data(value)
+        +clear()
+        +transformToHTML()
         -_readPdfFile(file)
         -_readExcelFile(file)
         -_processPdfContent(textContent)
@@ -62,12 +62,15 @@ classDiagram
     }
 
     class View {
-        -HTMLElement scheduleContent
-        -HTMLInputElement fileInput
-        -HTMLElement uploadFeedback
-        -HTMLElement fileInfo
+        -Model _model
+        -HTMLElement _scheduleContent
+        -HTMLInputElement _fileInput
+        -HTMLElement _uploadFeedback
+        -HTMLElement _fileInfo
+        +get model()
+        +set model(value)
         +initialize()
-        +displaySchedule(htmlContent)
+        +displaySchedule(file)
         +showFileInfo(file)
         +hideFileInfo()
         +showError(message)
@@ -83,10 +86,10 @@ classDiagram
 ```mermaid
 classDiagram
     class Controller {
-        -Model model
-        -View view
-        -HTMLInputElement fileInput
-        -HTMLButtonElement uploadButton
+        -Model _model
+        -View _view
+        -HTMLInputElement _fileInput
+        -HTMLButtonElement _uploadButton
         +constructor()
         +initialize() void
         -_setupEventListeners() void
@@ -102,14 +105,14 @@ classDiagram
     class Model {
         -pdfjsLib pdfLib
         -XLSX XLSX
-        -headers
-        -rows
+        -_headers
+        -_rows
         +constructor()
         +readFile(File) Promise~void~
-        +setData(Array, Array) void
-        +getData() Object
-        +clearData() void
-        +toHtml() string
+        +get data() Object
+        +set data(Object) void
+        +clear() void
+        +transformToHTML() string
         -_readPdfFile(File) Promise~void~
         -_readExcelFile(File) Promise~void~
         -_processPdfContent(Object) void
@@ -123,16 +126,19 @@ classDiagram
 ```mermaid
 classDiagram
     class View {
-        -HTMLElement scheduleContent
-        -HTMLInputElement fileInput
-        -HTMLElement uploadFeedback
-        -HTMLElement fileInfo
-        -HTMLElement fileName
-        -HTMLElement fileDetails
-        -HTMLButtonElement closeButton
+        -Model _model
+        -HTMLElement _scheduleContent
+        -HTMLInputElement _fileInput
+        -HTMLElement _uploadFeedback
+        -HTMLElement _fileInfo
+        -HTMLElement _fileName
+        -HTMLElement _fileDetails
+        -HTMLButtonElement _closeButton
         +constructor()
+        +get model() Model
+        +set model(Model) void
         +initialize() void
-        +displaySchedule(string, File) void
+        +displaySchedule(File) void
         +clearFeedback() void
         +showFileInfo(File) void
         +hideFileInfo() void

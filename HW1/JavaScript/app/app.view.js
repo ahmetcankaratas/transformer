@@ -4,25 +4,25 @@ class View {
     this._model = model;
 
     /** @private @type {HTMLElement} */
-    this.scheduleContent = document.getElementById("scheduleContent");
+    this._scheduleContent = document.getElementById("scheduleContent");
     /** @private @type {HTMLInputElement} */
-    this.fileInput = document.getElementById("fileInput");
+    this._fileInput = document.getElementById("fileInput");
     /** @private @type {HTMLElement} */
-    this.uploadFeedback = document.getElementById("uploadFeedback");
+    this._uploadFeedback = document.getElementById("uploadFeedback");
     /** @private @type {HTMLElement} */
-    this.fileInfo = document.querySelector(".file-info");
+    this._fileInfo = document.querySelector(".file-info");
     /** @private @type {HTMLElement} */
-    this.fileName = this.fileInfo.querySelector(".file-name");
+    this._fileName = this._fileInfo.querySelector(".file-name");
     /** @private @type {HTMLElement} */
-    this.fileDetails = this.fileInfo.querySelector(".file-details");
+    this._fileDetails = this._fileInfo.querySelector(".file-details");
 
     if (
-      !this.scheduleContent ||
-      !this.fileInput ||
-      !this.uploadFeedback ||
-      !this.fileInfo ||
-      !this.fileName ||
-      !this.fileDetails
+      !this._scheduleContent ||
+      !this._fileInput ||
+      !this._uploadFeedback ||
+      !this._fileInfo ||
+      !this._fileName ||
+      !this._fileDetails
     ) {
       throw new Error("Required elements not found");
     }
@@ -44,7 +44,7 @@ class View {
 
     // Render the table directly
     const tableHtml = this.renderTable();
-    this.scheduleContent.innerHTML = tableHtml;
+    this._scheduleContent.innerHTML = tableHtml;
   }
 
   /**
@@ -64,17 +64,19 @@ class View {
   }
 
   /**
-   * @param {Model} model
+   * @getter
+   * @returns {Model}
    */
-  setModel(model) {
-    this._model = model;
+  get model() {
+    return this._model;
   }
 
   /**
-   * @returns {Model}
+   * @setter
+   * @param {Model} model
    */
-  getModel() {
-    return this._model;
+  set model(model) {
+    this._model = model;
   }
 
   /**
@@ -82,7 +84,7 @@ class View {
    * @returns {void}
    */
   clearFeedback() {
-    this.uploadFeedback.innerHTML = "";
+    this._uploadFeedback.innerHTML = "";
   }
 
   /**
@@ -95,13 +97,13 @@ class View {
     const lastModified = new Date(file.lastModified).toLocaleString();
     const fileType = file.type || this._getFileTypeFromName(file.name);
 
-    this.fileName.textContent = file.name;
-    this.fileDetails.textContent = `${this._getFileTypeLabel(
+    this._fileName.textContent = file.name;
+    this._fileDetails.textContent = `${this._getFileTypeLabel(
       fileType
     )} • ${fileSize} • Last modified: ${lastModified}`;
 
-    this.fileInfo.classList.add("show");
-    this.fileInfo.style.display = "block";
+    this._fileInfo.classList.add("show");
+    this._fileInfo.style.display = "block";
   }
 
   /**
@@ -109,8 +111,8 @@ class View {
    * @returns {void}
    */
   hideFileInfo() {
-    this.fileInfo.classList.remove("show");
-    this.fileInfo.style.display = "none";
+    this._fileInfo.classList.remove("show");
+    this._fileInfo.style.display = "none";
   }
 
   /**
@@ -167,7 +169,7 @@ class View {
    * @returns {void}
    */
   showError(message) {
-    this.uploadFeedback.innerHTML = `
+    this._uploadFeedback.innerHTML = `
       <div class="alert alert-danger alert-dismissible fade show" role="alert">
         <i class="bi bi-exclamation-triangle-fill me-2"></i>
         ${this._escapeHtml(message)}
@@ -181,7 +183,7 @@ class View {
    * @returns {void}
    */
   showLoading() {
-    this.uploadFeedback.innerHTML = `
+    this._uploadFeedback.innerHTML = `
       <div class="d-flex align-items-center">
         <div class="spinner-border spinner-border-sm text-primary me-2" role="status">
           <span class="visually-hidden">Loading...</span>

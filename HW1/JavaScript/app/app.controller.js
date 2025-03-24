@@ -1,21 +1,21 @@
 class Controller {
   constructor() {
     /** @private @type {Model} */
-    this.model = new Model();
+    this._model = new Model();
     /** @private @type {View} */
-    this.view = new View(this.model);
+    this._view = new View(this._model);
 
     /** @private @type {HTMLInputElement} */
-    this.fileInput = document.getElementById("fileInput");
+    this._fileInput = document.getElementById("fileInput");
     /** @private @type {HTMLButtonElement} */
-    this.uploadButton = document.getElementById("uploadBtn");
+    this._uploadButton = document.getElementById("uploadBtn");
 
-    if (!this.fileInput || !this.uploadButton) {
+    if (!this._fileInput || !this._uploadButton) {
       throw new Error("Required elements not found");
     }
   }
   initialize() {
-    this.view.initialize();
+    this._view.initialize();
     this._setupEventListeners();
   }
 
@@ -25,14 +25,16 @@ class Controller {
    * @returns {void}
    */
   _setupEventListeners() {
-    this.fileInput.addEventListener("change", () => this._handleFileSelect());
-    this.uploadButton.addEventListener("click", () => this._handleFileUpload());
+    this._fileInput.addEventListener("change", () => this._handleFileSelect());
+    this._uploadButton.addEventListener("click", () =>
+      this._handleFileUpload()
+    );
 
     // Set up event listener for file info close button
     document
       .querySelector(".file-info .btn-close")
       .addEventListener("click", () => {
-        this.view.hideFileInfo();
+        this._view.hideFileInfo();
       });
   }
 
@@ -42,10 +44,10 @@ class Controller {
    * @returns {void}
    */
   _handleFileSelect() {
-    const hasFile = this.fileInput.files.length > 0;
-    this.uploadButton.disabled = !hasFile;
+    const hasFile = this._fileInput.files.length > 0;
+    this._uploadButton.disabled = !hasFile;
     if (!hasFile) {
-      this.view.clearFeedback();
+      this._view.clearFeedback();
     }
   }
 
@@ -56,25 +58,25 @@ class Controller {
    * @returns {Promise<void>}
    */
   async _handleFileUpload() {
-    const file = this.fileInput.files[0];
+    const file = this._fileInput.files[0];
     if (!file) {
-      this.view.showError("Please select a file.");
+      this._view.showError("Please select a file.");
       return;
     }
 
     try {
-      this.uploadButton.disabled = true;
-      this.view.showLoading();
+      this._uploadButton.disabled = true;
+      this._view.showLoading();
 
-      const data = await this.model.readFile(file);
-      this.model.setData(data);
-      this.view.displaySchedule(file);
+      const data = await this._model.readFile(file);
+      this._model.data = data;
+      this._view.displaySchedule(file);
 
-      this.uploadButton.disabled = false;
+      this._uploadButton.disabled = false;
     } catch (error) {
-      this.view.showError(error.message);
-      this.fileInput.value = "";
-      this.uploadButton.disabled = true;
+      this._view.showError(error.message);
+      this._fileInput.value = "";
+      this._uploadButton.disabled = true;
     }
   }
 }

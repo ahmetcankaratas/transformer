@@ -6,9 +6,9 @@ class Model {
     this.XLSX = window.XLSX;
 
     /** @private @type {string[]} */
-    this.headers = [];
+    this._headers = [];
     /** @private @type {string[][]} */
-    this.rows = [];
+    this._rows = [];
   }
 
   /**
@@ -151,28 +151,27 @@ class Model {
   }
 
   /**
-   * @public
-   * @param {ParsedData} data
-   * @returns {void}
+   * @getter
+   * @returns {ParsedData}
    */
-  setData(data) {
+  get data() {
+    return {
+      headers: [...this._headers],
+      rows: [...this._rows],
+    };
+  }
+
+  /**
+   * @setter
+   * @param {ParsedData} data
+   */
+  set data(data) {
     if (!this._validateData(data)) {
       throw new Error("Invalid table data format.");
     }
 
-    this.headers = [...data.headers];
-    this.rows = [...data.rows];
-  }
-
-  /**
-   * @public
-   * @returns {ParsedData}
-   */
-  getData() {
-    return {
-      headers: [...this.headers],
-      rows: [...this.rows],
-    };
+    this._headers = [...data.headers];
+    this._rows = [...data.rows];
   }
 
   /**
@@ -180,8 +179,8 @@ class Model {
    * @returns {void}
    */
   clear() {
-    this.headers = [];
-    this.rows = [];
+    this._headers = [];
+    this._rows = [];
   }
 
   /**
@@ -204,7 +203,7 @@ class Model {
    * @returns {string}
    */
   transformToHTML() {
-    if (!this.headers || !this.rows) {
+    if (!this._headers || !this._rows) {
       return '<div class="alert alert-warning">No data available</div>';
     }
 
@@ -212,14 +211,14 @@ class Model {
 
     // Add headers
     html += '<thead class="table-light"><tr>';
-    for (const header of this.headers) {
+    for (const header of this._headers) {
       html += `<th>${this._escapeHTML(header)}</th>`;
     }
     html += "</tr></thead>";
 
     // Add body
     html += "<tbody>";
-    for (const row of this.rows) {
+    for (const row of this._rows) {
       html += "<tr>";
       for (const cell of row) {
         html += `<td>${this._escapeHTML(cell)}</td>`;
