@@ -14,17 +14,12 @@ A web-based application that transforms PDF and Excel course schedules into HTML
 ## Project Structure
 
 ```
-├── index.html
-└── src/
-    ├── models/
-    │   ├── FileModel.js    # Handles file operations and parsing
-    │   └── TableModel.js   # Manages table data structure
-    ├── views/
-    │   └── ScheduleView.js # Handles UI display and interactions
-    ├── controllers/
-    │   └── AppController.js # Main application controller
-    └── styles/
-        └── main.css        # Custom styles
+├── app.html              # Main HTML file
+├── app.css               # Custom styles
+└── app/                  # Application code directory
+    ├── app.model.js      # Data handling and file processing
+    ├── app.view.js       # UI display and interactions
+    ├── app.controller.js # Main application controller
 ```
 
 ## UML Class Diagrams
@@ -33,14 +28,14 @@ A web-based application that transforms PDF and Excel course schedules into HTML
 
 ```mermaid
 classDiagram
-    AppController --> FileModel : uses
-    AppController --> ScheduleView : uses
-    FileModel --> TableData : creates
-    ScheduleView --> TableData : displays
+    Controller --> Model : uses
+    Controller --> View : uses
+    Model --> Controller : provides data
+    View --> Controller : provides user interface
 
-    class AppController {
-        -FileModel fileModel
-        -ScheduleView scheduleView
+    class Controller {
+        -Model model
+        -View view
         -HTMLInputElement fileInput
         -HTMLButtonElement uploadButton
         +initialize()
@@ -49,10 +44,16 @@ classDiagram
         -_handleFileUpload()
     }
 
-    class FileModel {
+    class Model {
         -pdfjsLib pdfLib
         -XLSX XLSX
+        -headers
+        -rows
         +readFile(file)
+        +setData(headers, rows)
+        +getData()
+        +clearData()
+        +toHtml()
         -_readPdfFile(file)
         -_readExcelFile(file)
         -_processPdfContent(textContent)
@@ -60,38 +61,30 @@ classDiagram
         -_getFileTypeFromName(fileName)
     }
 
-    class ScheduleView {
+    class View {
         -HTMLElement scheduleContent
         -HTMLInputElement fileInput
         -HTMLElement uploadFeedback
         -HTMLElement fileInfo
         +initialize()
-        +displaySchedule(data, file)
+        +displaySchedule(htmlContent)
         +showFileInfo(file)
         +hideFileInfo()
         +showError(message)
         +showLoading()
-        -_createTableHtml(data)
-        -_formatFileSize(bytes)
-        -_getFileTypeLabel(fileType)
-        -_escapeHtml(unsafe)
-    }
-
-    class TableData {
-        +string[] headers
-        +string[][] rows
+        +clearFeedback()
     }
 ```
 
 ### Detailed Class Specifications
 
-#### AppController
+#### Controller
 
 ```mermaid
 classDiagram
-    class AppController {
-        -FileModel fileModel
-        -ScheduleView scheduleView
+    class Controller {
+        -Model model
+        -View view
         -HTMLInputElement fileInput
         -HTMLButtonElement uploadButton
         +constructor()
@@ -102,28 +95,34 @@ classDiagram
     }
 ```
 
-#### FileModel
+#### Model
 
 ```mermaid
 classDiagram
-    class FileModel {
+    class Model {
         -pdfjsLib pdfLib
         -XLSX XLSX
+        -headers
+        -rows
         +constructor()
-        +readFile(File) Promise~TableData~
-        -_readPdfFile(File) Promise~TableData~
-        -_readExcelFile(File) Promise~TableData~
-        -_processPdfContent(Object) TableData
-        -_processExcelData(Array) TableData
+        +readFile(File) Promise~void~
+        +setData(Array, Array) void
+        +getData() Object
+        +clearData() void
+        +toHtml() string
+        -_readPdfFile(File) Promise~void~
+        -_readExcelFile(File) Promise~void~
+        -_processPdfContent(Object) void
+        -_processExcelData(Array) void
         -_getFileTypeFromName(string) string
     }
 ```
 
-#### ScheduleView
+#### View
 
 ```mermaid
 classDiagram
-    class ScheduleView {
+    class View {
         -HTMLElement scheduleContent
         -HTMLInputElement fileInput
         -HTMLElement uploadFeedback
@@ -133,16 +132,12 @@ classDiagram
         -HTMLButtonElement closeButton
         +constructor()
         +initialize() void
-        +displaySchedule(TableData, File) void
+        +displaySchedule(string, File) void
         +clearFeedback() void
         +showFileInfo(File) void
         +hideFileInfo() void
         +showError(string) void
         +showLoading() void
-        -_createTableHtml(TableData) string
-        -_formatFileSize(number) string
-        -_getFileTypeLabel(string) string
-        -_escapeHtml(string) string
     }
 ```
 
@@ -156,7 +151,7 @@ classDiagram
 ## Setup
 
 1. Clone the repository
-2. Open `index.html` in a web browser
+2. Open `app.html` in a web browser
 3. Upload a PDF or Excel file containing a course schedule
 
 ## Usage
