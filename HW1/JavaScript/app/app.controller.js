@@ -1,19 +1,12 @@
-/**
- * @class AppController
- * @description Main application controller that handles user interactions and coordinates models and views
- * @public
- */
-class AppController {
-  /**
-   * @constructor
-   * @public
-   * @throws {Error} When required dependencies are not found
-   */
+class Controller {
   constructor() {
     /** @private @type {FileModel} - Handles file operations */
-    this.fileModel = new FileModel();
-    /** @private @type {ScheduleView} - Handles UI display */
-    this.scheduleView = new ScheduleView();
+    this.fileModel = new Model();
+    /** @private @type {TableModel} - Handles table data */
+    this.tableModel = new TableModel();
+    /** @private @type {AppView} - Handles all UI components */
+    this.appView = new View(this.tableModel);
+
     /** @private @type {HTMLInputElement} - File input element */
     this.fileInput = document.getElementById("fileInput");
     /** @private @type {HTMLButtonElement} - Upload button element */
@@ -23,15 +16,8 @@ class AppController {
       throw new Error("Required elements not found");
     }
   }
-
-  /**
-   * @method initialize
-   * @description Initializes the application and sets up event listeners
-   * @public
-   * @returns {void}
-   */
   initialize() {
-    this.scheduleView.initialize();
+    this.appView.initialize();
     this._setupEventListeners();
   }
 
@@ -44,6 +30,13 @@ class AppController {
   _setupEventListeners() {
     this.fileInput.addEventListener("change", () => this._handleFileSelect());
     this.uploadButton.addEventListener("click", () => this._handleFileUpload());
+
+    // Set up event listener for file info close button
+    document
+      .querySelector(".file-info .btn-close")
+      .addEventListener("click", () => {
+        this.appView.hideFileInfo();
+      });
   }
 
   /**
@@ -56,7 +49,7 @@ class AppController {
     const hasFile = this.fileInput.files.length > 0;
     this.uploadButton.disabled = !hasFile;
     if (!hasFile) {
-      this.scheduleView.clearFeedback();
+      this.appView.clearFeedback();
     }
   }
 
@@ -70,20 +63,21 @@ class AppController {
   async _handleFileUpload() {
     const file = this.fileInput.files[0];
     if (!file) {
-      this.scheduleView.showError("Please select a file.");
+      this.appView.showError("Please select a file.");
       return;
     }
 
     try {
       this.uploadButton.disabled = true;
-      this.scheduleView.showLoading();
+      this.appView.showLoading();
 
       const data = await this.fileModel.readFile(file);
-      this.scheduleView.displaySchedule(data, file);
+      this.tableModel.setData(data);
+      this.appView.displaySchedule(file);
 
       this.uploadButton.disabled = false;
     } catch (error) {
-      this.scheduleView.showError(error.message);
+      this.appView.showError(error.message);
       this.fileInput.value = "";
       this.uploadButton.disabled = true;
     }

@@ -15,7 +15,7 @@
       href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="src/styles/main.css" />
+    <link rel="stylesheet" href="app.css" />
 
     <!-- PDF.js library -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -87,19 +87,18 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- Load models -->
-    <script src="src/models/FileModel.js"></script>
-    <script src="src/models/TableModel.js"></script>
+    <script src="app/app.model.js"></script>
 
     <!-- Load views -->
-    <script src="src/views/ScheduleView.js"></script>
+    <script src="app/app.view.js"></script>
 
     <!-- Load controller -->
-    <script src="src/controllers/AppController.js"></script>
+    <script src="app/app.controller.js"></script>
 
     <!-- Initialize application -->
     <script>
       document.addEventListener("DOMContentLoaded", () => {
-        const app = new AppController();
+        const app = new Controller();
         app.initialize();
       });
     </script>
