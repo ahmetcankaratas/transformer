@@ -1,16 +1,21 @@
 class Model {
   constructor() {
-    /** @private @type {pdfjsLib} - PDF.js library instance */
+    /** @private @type {pdfjsLib} */
     this.pdfLib = window.pdfjsLib;
-    /** @private @type {XLSX} - SheetJS library instance */
+    /** @private @type {XLSX} */
     this.XLSX = window.XLSX;
+
+    /** @private @type {string[]} */
+    this.headers = [];
+    /** @private @type {string[][]} */
+    this.rows = [];
   }
 
   /**
    * @public
    * @async
-   * @param {File} file - The file to read (PDF or Excel)
-   * @returns {Promise<ParsedData>} Parsed data from the file
+   * @param {File} file
+   * @returns {Promise<ParsedData>}
    */
   async readFile(file) {
     const fileType = file.type || this._getFileTypeFromName(file.name);
@@ -29,8 +34,8 @@ class Model {
   /**
    * @private
    * @async
-   * @param {File} file - The PDF file to read
-   * @returns {Promise<ParsedData>} Parsed data from the PDF
+   * @param {File} file
+   * @returns {Promise<ParsedData>}
    */
   async _readPdfFile(file) {
     try {
@@ -48,8 +53,8 @@ class Model {
   /**
    * @private
    * @async
-   * @param {File} file - The Excel file to read
-   * @returns {Promise<ParsedData>} Parsed data from the Excel file
+   * @param {File} file
+   * @returns {Promise<ParsedData>}
    */
   async _readExcelFile(file) {
     try {
@@ -66,9 +71,9 @@ class Model {
 
   /**
    * @private
-   * @param {Object} textContent - Raw PDF text content
-   * @param {Array<{str: string}>} textContent.items - Text items from PDF
-   * @returns {ParsedData} Structured data from PDF content
+   * @param {Object} textContent
+   * @param {Array<{str: string}>} textContent.items
+   * @returns {ParsedData}
    */
   _processPdfContent(textContent) {
     const items = textContent.items
@@ -87,8 +92,8 @@ class Model {
 
   /**
    * @private
-   * @param {Array<Array<string>>} jsonData - Raw Excel data
-   * @returns {ParsedData} Structured data from Excel
+   * @param {Array<Array<string>>} jsonData
+   * @returns {ParsedData}
    */
   _processExcelData(jsonData) {
     if (!jsonData || jsonData.length === 0) {
@@ -105,8 +110,8 @@ class Model {
 
   /**
    * @private
-   * @param {string} fileName - Name of the file
-   * @returns {string} MIME type of the file
+   * @param {string} fileName
+   * @returns {string}
    */
   _getFileTypeFromName(fileName) {
     const extension = fileName.split(".").pop().toLowerCase();
@@ -123,8 +128,8 @@ class Model {
 
   /**
    * @private
-   * @param {string[]} items - Text items from PDF
-   * @returns {string[][]} - Grouped rows of text items
+   * @param {string[]} items
+   * @returns {string[][]}
    */
   _groupTextItemsByRows(items) {
     // This is a simplified approach - a more robust solution would use
@@ -144,28 +149,10 @@ class Model {
 
     return rows;
   }
-}
-
-/**
- * @class TableModel
- * @description Handles table data processing and manipulation
- * @public
- */
-class TableModel {
-  /**
-   * @constructor
-   * @public
-   */
-  constructor() {
-    /** @private @type {string[]} - Table headers */
-    this.headers = [];
-    /** @private @type {string[][]} - Table rows */
-    this.rows = [];
-  }
 
   /**
    * @public
-   * @param {ParsedData} data - The table data to set
+   * @param {ParsedData} data
    * @returns {void}
    */
   setData(data) {
@@ -179,7 +166,7 @@ class TableModel {
 
   /**
    * @public
-   * @returns {ParsedData} The current table data
+   * @returns {ParsedData}
    */
   getData() {
     return {
@@ -199,8 +186,8 @@ class TableModel {
 
   /**
    * @private
-   * @param {ParsedData} data - The data to validate
-   * @returns {boolean} True if data is valid, false otherwise
+   * @param {ParsedData} data
+   * @returns {boolean}
    */
   _validateData(data) {
     if (!data || !Array.isArray(data.headers) || !Array.isArray(data.rows)) {
@@ -214,7 +201,7 @@ class TableModel {
   }
 
   /**
-   * @returns {string} - HTML table string
+   * @returns {string}
    */
   transformToHTML() {
     if (!this.headers || !this.rows) {
@@ -246,8 +233,8 @@ class TableModel {
 
   /**
    * @private
-   * @param {string} unsafe - The unsafe string that might contain HTML
-   * @returns {string} - Escaped safe string
+   * @param {string} unsafe
+   * @returns {string}
    */
   _escapeHTML(unsafe) {
     return unsafe

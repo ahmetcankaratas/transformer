@@ -1,15 +1,13 @@
 class Controller {
   constructor() {
-    /** @private @type {FileModel} - Handles file operations */
-    this.fileModel = new Model();
-    /** @private @type {TableModel} - Handles table data */
-    this.tableModel = new TableModel();
-    /** @private @type {AppView} - Handles all UI components */
-    this.appView = new View(this.tableModel);
+    /** @private @type {Model} */
+    this.model = new Model();
+    /** @private @type {View} */
+    this.view = new View(this.model);
 
-    /** @private @type {HTMLInputElement} - File input element */
+    /** @private @type {HTMLInputElement} */
     this.fileInput = document.getElementById("fileInput");
-    /** @private @type {HTMLButtonElement} - Upload button element */
+    /** @private @type {HTMLButtonElement} */
     this.uploadButton = document.getElementById("uploadBtn");
 
     if (!this.fileInput || !this.uploadButton) {
@@ -17,13 +15,11 @@ class Controller {
     }
   }
   initialize() {
-    this.appView.initialize();
+    this.view.initialize();
     this._setupEventListeners();
   }
 
   /**
-   * @method _setupEventListeners
-   * @description Sets up event listeners for file input and upload button
    * @private
    * @returns {void}
    */
@@ -35,13 +31,11 @@ class Controller {
     document
       .querySelector(".file-info .btn-close")
       .addEventListener("click", () => {
-        this.appView.hideFileInfo();
+        this.view.hideFileInfo();
       });
   }
 
   /**
-   * @method _handleFileSelect
-   * @description Handles file selection event
    * @private
    * @returns {void}
    */
@@ -49,13 +43,11 @@ class Controller {
     const hasFile = this.fileInput.files.length > 0;
     this.uploadButton.disabled = !hasFile;
     if (!hasFile) {
-      this.appView.clearFeedback();
+      this.view.clearFeedback();
     }
   }
 
   /**
-   * @method _handleFileUpload
-   * @description Handles file upload event
    * @private
    * @async
    * @returns {Promise<void>}
@@ -63,21 +55,21 @@ class Controller {
   async _handleFileUpload() {
     const file = this.fileInput.files[0];
     if (!file) {
-      this.appView.showError("Please select a file.");
+      this.view.showError("Please select a file.");
       return;
     }
 
     try {
       this.uploadButton.disabled = true;
-      this.appView.showLoading();
+      this.view.showLoading();
 
-      const data = await this.fileModel.readFile(file);
-      this.tableModel.setData(data);
-      this.appView.displaySchedule(file);
+      const data = await this.model.readFile(file);
+      this.model.setData(data);
+      this.view.displaySchedule(file);
 
       this.uploadButton.disabled = false;
     } catch (error) {
-      this.appView.showError(error.message);
+      this.view.showError(error.message);
       this.fileInput.value = "";
       this.uploadButton.disabled = true;
     }

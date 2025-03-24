@@ -1,22 +1,19 @@
 class View {
-  constructor(tableModel) {
-    /** @private @type {TableModel} - The table model instance */
-    this.tableModel = tableModel;
+  constructor(model) {
+    /** @private @type {Model} */
+    this._model = model;
 
-    /** @private @type {TableView} - The table view component */
-    this.tableView = new TableView(this.tableModel);
-
-    /** @private @type {HTMLElement} - Container for schedule content */
+    /** @private @type {HTMLElement} */
     this.scheduleContent = document.getElementById("scheduleContent");
-    /** @private @type {HTMLInputElement} - File input element */
+    /** @private @type {HTMLInputElement} */
     this.fileInput = document.getElementById("fileInput");
-    /** @private @type {HTMLElement} - Container for upload feedback */
+    /** @private @type {HTMLElement} */
     this.uploadFeedback = document.getElementById("uploadFeedback");
-    /** @private @type {HTMLElement} - Container for file information */
+    /** @private @type {HTMLElement} */
     this.fileInfo = document.querySelector(".file-info");
-    /** @private @type {HTMLElement} - Element displaying file name */
+    /** @private @type {HTMLElement} */
     this.fileName = this.fileInfo.querySelector(".file-name");
-    /** @private @type {HTMLElement} - Element displaying file details */
+    /** @private @type {HTMLElement} */
     this.fileDetails = this.fileInfo.querySelector(".file-details");
 
     if (
@@ -31,17 +28,11 @@ class View {
     }
   }
 
-  /**
-   * @public
-   * @returns {void}
-   */
-  initialize() {
-    // Nothing to initialize for now
-  }
+  initialize() {}
 
   /**
    * @public
-   * @param {File} file - The uploaded file
+   * @param {File} file
    * @returns {void}
    */
   displaySchedule(file) {
@@ -51,9 +42,39 @@ class View {
     // Update file information
     this.showFileInfo(file);
 
-    // Render the table using TableView
-    const tableHtml = this.tableView.render();
+    // Render the table directly
+    const tableHtml = this.renderTable();
     this.scheduleContent.innerHTML = tableHtml;
+  }
+
+  /**
+   * @returns {string}
+   */
+  renderTable() {
+    if (!this._model) {
+      return '<div class="alert alert-warning">Model not set</div>';
+    }
+
+    try {
+      return this._model.transformToHTML();
+    } catch (error) {
+      console.error("Error rendering table:", error);
+      return '<div class="alert alert-danger">Error rendering table</div>';
+    }
+  }
+
+  /**
+   * @param {Model} model
+   */
+  setModel(model) {
+    this._model = model;
+  }
+
+  /**
+   * @returns {Model}
+   */
+  getModel() {
+    return this._model;
   }
 
   /**
@@ -66,7 +87,7 @@ class View {
 
   /**
    * @public
-   * @param {File} file - The file to display information for
+   * @param {File} file
    * @returns {void}
    */
   showFileInfo(file) {
@@ -94,8 +115,8 @@ class View {
 
   /**
    * @private
-   * @param {string} fileName - Name of the file
-   * @returns {string} MIME type of the file
+   * @param {string} fileName
+   * @returns {string}
    */
   _getFileTypeFromName(fileName) {
     const extension = fileName.split(".").pop().toLowerCase();
@@ -112,8 +133,8 @@ class View {
 
   /**
    * @private
-   * @param {string} fileType - MIME type of the file
-   * @returns {string} User-friendly label
+   * @param {string} fileType
+   * @returns {string}
    */
   _getFileTypeLabel(fileType) {
     if (fileType.includes("pdf")) {
@@ -127,8 +148,8 @@ class View {
 
   /**
    * @private
-   * @param {number} bytes - File size in bytes
-   * @returns {string} Formatted file size
+   * @param {number} bytes
+   * @returns {string}
    */
   _formatFileSize(bytes) {
     if (bytes === 0) return "0 Bytes";
@@ -142,7 +163,7 @@ class View {
 
   /**
    * @public
-   * @param {string} message - The error message to display
+   * @param {string} message
    * @returns {void}
    */
   showError(message) {
@@ -172,8 +193,8 @@ class View {
 
   /**
    * @private
-   * @param {string} unsafe - The unsafe string
-   * @returns {string} Escaped HTML string
+   * @param {string} unsafe
+   * @returns {string}
    */
   _escapeHtml(unsafe) {
     return unsafe
@@ -182,42 +203,5 @@ class View {
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;");
-  }
-}
-
-class TableView {
-  constructor(tableModel) {
-    /** @private @type {TableModel} - The table model instance */
-    this._tableModel = tableModel;
-  }
-
-  /**
-   * @returns {string} - HTML string representation of the table
-   */
-  render() {
-    if (!this._tableModel) {
-      return '<div class="alert alert-warning">Table model not set</div>';
-    }
-
-    try {
-      return this._tableModel.transformToHTML();
-    } catch (error) {
-      console.error("Error rendering table:", error);
-      return '<div class="alert alert-danger">Error rendering table</div>';
-    }
-  }
-
-  /**
-   * @param {TableModel} tableModel - The new table model instance
-   */
-  setModel(tableModel) {
-    this._tableModel = tableModel;
-  }
-
-  /**
-   * @returns {TableModel} - The current table model instance
-   */
-  getModel() {
-    return this._tableModel;
   }
 }
