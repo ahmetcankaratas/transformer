@@ -42,45 +42,45 @@ classDiagram
     View --> Controller : provides user interface
 
     class Controller {
-        -Model _model
-        -View _view
-        -HTMLInputElement _fileInput
-        -HTMLButtonElement _uploadButton
+        -Model #model
+        -View #view
+        -HTMLInputElement #fileInput
+        -HTMLButtonElement #uploadButton
         +initialize()
-        -_setupEventListeners()
-        -_handleFileSelect()
-        -_handleFileUpload()
+        -#setupEventListeners()
+        -#handleFileSelect()
+        -#handleFileUpload()
     }
 
     class Model {
-        -pdfjsLib pdfLib
-        -XLSX XLSX
-        -_headers
-        -_rows
+        -pdfjsLib #pdfLib
+        -XLSX #XLSX
+        -#headers
+        -#rows
         +readFile(file)
         +get data()
         +set data(value)
         +clear()
-        -_readPdfFile(file)
-        -_readExcelFile(file)
-        -_processPdfContent(textContent)
-        -_processExcelData(jsonData)
-        -_validateData(data)
-        -_getFileTypeFromName(fileName)
+        -#readPdfFile(file)
+        -#readExcelFile(file)
+        -#processPdfContent(textContent)
+        -#processExcelData(jsonData)
+        -#validateData(data)
+        -#getFileTypeFromName(fileName)
     }
 
     class View {
-        -Model _model
-        -HTMLElement _scheduleContent
-        -HTMLInputElement _fileInput
-        -HTMLElement _uploadFeedback
-        -HTMLElement _fileInfo
+        -Model #model
+        -HTMLElement #scheduleContent
+        -HTMLInputElement #fileInput
+        -HTMLElement #uploadFeedback
+        -HTMLElement #fileInfo
         +get model()
         +set model(value)
         +initialize()
         +displaySchedule(file)
         +renderTable()
-        -_generateTableHTML(data)
+        -#generateTableHTML(data)
         +showFileInfo(file)
         +hideFileInfo()
         +showError(message)
@@ -96,15 +96,15 @@ classDiagram
 ```mermaid
 classDiagram
     class Controller {
-        -Model _model
-        -View _view
-        -HTMLInputElement _fileInput
-        -HTMLButtonElement _uploadButton
+        -Model #model
+        -View #view
+        -HTMLInputElement #fileInput
+        -HTMLButtonElement #uploadButton
         +constructor()
         +initialize() void
-        -_setupEventListeners() void
-        -_handleFileSelect() void
-        -_handleFileUpload() Promise~void~
+        -#setupEventListeners() void
+        -#handleFileSelect() void
+        -#handleFileUpload() Promise~void~
     }
 ```
 
@@ -113,21 +113,21 @@ classDiagram
 ```mermaid
 classDiagram
     class Model {
-        -pdfjsLib pdfLib
-        -XLSX XLSX
-        -_headers
-        -_rows
+        -pdfjsLib #pdfLib
+        -XLSX #XLSX
+        -#headers
+        -#rows
         +constructor()
         +readFile(File) Promise~void~
         +get data() Object
         +set data(Object) void
         +clear() void
-        -_readPdfFile(File) Promise~void~
-        -_readExcelFile(File) Promise~void~
-        -_processPdfContent(Object) void
-        -_processExcelData(Array) void
-        -_validateData(Object) boolean
-        -_getFileTypeFromName(string) string
+        -#readPdfFile(File) Promise~void~
+        -#readExcelFile(File) Promise~void~
+        -#processPdfContent(Object) void
+        -#processExcelData(Array) void
+        -#validateData(Object) boolean
+        -#getFileTypeFromName(string) string
     }
 ```
 
@@ -136,27 +136,27 @@ classDiagram
 ```mermaid
 classDiagram
     class View {
-        -Model _model
-        -HTMLElement _scheduleContent
-        -HTMLInputElement _fileInput
-        -HTMLElement _uploadFeedback
-        -HTMLElement _fileInfo
-        -HTMLElement _fileName
-        -HTMLElement _fileDetails
-        -HTMLButtonElement _closeButton
+        -Model #model
+        -HTMLElement #scheduleContent
+        -HTMLInputElement #fileInput
+        -HTMLElement #uploadFeedback
+        -HTMLElement #fileInfo
+        -HTMLElement #fileName
+        -HTMLElement #fileDetails
+        -HTMLButtonElement #closeButton
         +constructor()
         +get model() Model
         +set model(Model) void
         +initialize() void
         +displaySchedule(File) void
         +renderTable() string
-        -_generateTableHTML(Object) string
+        -#generateTableHTML(Object) string
         +clearFeedback() void
         +showFileInfo(File) void
         +hideFileInfo() void
         +showError(string) void
         +showLoading() void
-        -_escapeHtml(string) string
+        -#escapeHtml(string) string
     }
 ```
 
@@ -166,6 +166,16 @@ classDiagram
 - [SheetJS](https://sheetjs.com/) - Excel file parsing
 - [Bootstrap 5.3.3](https://getbootstrap.com/) - UI framework
 - [Bootstrap Icons](https://icons.getbootstrap.com/) - Icons
+
+## JavaScript Implementation
+
+The application uses modern JavaScript features including:
+
+- ES6 Classes
+- Private class fields (using the `#` prefix)
+- Async/await for asynchronous operations
+
+For more information on JavaScript classes and private fields, see the [Mozilla Developer Network documentation](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes).
 
 ## Setup
 
@@ -189,14 +199,7 @@ The application handles various error scenarios:
 - Empty or corrupted files
 - PDF parsing errors
 - Excel parsing errors
-- Network issues
 
-## Browser Support
-
-- Chrome (latest)
-- Firefox (latest)
-- Safari (latest)
-- Edge (latest)
 
 ## Notes
 

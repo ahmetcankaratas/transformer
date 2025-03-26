@@ -1,14 +1,13 @@
 class Model {
-  constructor() {
-    /** @private @type {pdfjsLib} */
-    this.pdfLib = window.pdfjsLib;
-    /** @private @type {XLSX} */
-    this.XLSX = window.XLSX;
+  // Private fields
+  #pdfLib;
+  #XLSX;
+  #headers = [];
+  #rows = [];
 
-    /** @private @type {string[]} */
-    this._headers = [];
-    /** @private @type {string[][]} */
-    this._rows = [];
+  constructor() {
+    this.#pdfLib = window.pdfjsLib;
+    this.#XLSX = window.XLSX;
   }
 
   /**
@@ -18,12 +17,12 @@ class Model {
    * @returns {Promise<ParsedData>}
    */
   async readFile(file) {
-    const fileType = file.type || this._getFileTypeFromName(file.name);
+    const fileType = file.type || this.#getFileTypeFromName(file.name);
 
     if (fileType.includes("pdf")) {
-      return await this._readPdfFile(file);
+      return await this.#readPdfFile(file);
     } else if (fileType.includes("sheet") || /\.xlsx?$/.test(file.name)) {
-      return await this._readExcelFile(file);
+      return await this.#readExcelFile(file);
     } else {
       throw new Error(
         "Unsupported file format. Please upload a PDF or Excel file."
@@ -37,14 +36,14 @@ class Model {
    * @param {File} file
    * @returns {Promise<ParsedData>}
    */
-  async _readPdfFile(file) {
+  async #readPdfFile(file) {
     try {
       const arrayBuffer = await file.arrayBuffer();
-      const pdf = await this.pdfLib.getDocument(arrayBuffer).promise;
+      const pdf = await this.#pdfLib.getDocument(arrayBuffer).promise;
       const page = await pdf.getPage(1);
       const textContent = await page.getTextContent();
 
-      return this._processPdfContent(textContent);
+      return this.#processPdfContent(textContent);
     } catch (error) {
       throw new Error(`Failed to read PDF file: ${error.message}`);
     }
@@ -56,14 +55,16 @@ class Model {
    * @param {File} file
    * @returns {Promise<ParsedData>}
    */
-  async _readExcelFile(file) {
+  async #readExcelFile(file) {
     try {
       const arrayBuffer = await file.arrayBuffer();
-      const workbook = this.XLSX.read(arrayBuffer);
+      const workbook = this.#XLSX.read(arrayBuffer);
       const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-      const jsonData = this.XLSX.utils.sheet_to_json(firstSheet, { header: 1 });
+      const jsonData = this.#XLSX.utils.sheet_to_json(firstSheet, {
+        header: 1,
+      });
 
-      return this._processExcelData(jsonData);
+      return this.#processExcelData(jsonData);
     } catch (error) {
       throw new Error(`Failed to read Excel file: ${error.message}`);
     }
@@ -75,13 +76,13 @@ class Model {
    * @param {Array<{str: string}>} textContent.items
    * @returns {ParsedData}
    */
-  _processPdfContent(textContent) {
+  #processPdfContent(textContent) {
     const items = textContent.items
       .map((item) => item.str.trim())
       .filter((str) => str.length > 0);
 
     // Group text items into rows based on their position
-    const rows = this._groupTextItemsByRows(items);
+    const rows = this.#groupTextItemsByRows(items);
 
     // Determine headers (first row) and data rows
     const headers = rows.length > 0 ? rows[0] : [];
@@ -95,7 +96,7 @@ class Model {
    * @param {Array<Array<string>>} jsonData
    * @returns {ParsedData}
    */
-  _processExcelData(jsonData) {
+  #processExcelData(jsonData) {
     if (!jsonData || jsonData.length === 0) {
       throw new Error("Excel file is empty or invalid.");
     }
@@ -158,7 +159,7 @@ class Model {
    * @param {string} fileName
    * @returns {string}
    */
-  _getFileTypeFromName(fileName) {
+  #getFileTypeFromName(fileName) {
     const extension = fileName.split(".").pop().toLowerCase();
     switch (extension) {
       case "pdf":
@@ -176,7 +177,7 @@ class Model {
    * @param {string[]} items
    * @returns {string[][]}
    */
-  _groupTextItemsByRows(items) {
+  #groupTextItemsByRows(items) {
     // This is a simplified approach - a more robust solution would use
     // the y-coordinates from the PDF to determine rows
 
@@ -201,8 +202,8 @@ class Model {
    */
   get data() {
     return {
-      headers: [...this._headers],
-      rows: [...this._rows],
+      headers: [...this.#headers],
+      rows: [...this.#rows],
     };
   }
 
@@ -211,13 +212,13 @@ class Model {
    * @param {ParsedData} data
    */
   set data(data) {
-    if (!this._validateData(data)) {
+    if (!this.#validateData(data)) {
       console.error("Data validation failed:", data);
       throw new Error("Invalid table data format.");
     }
 
-    this._headers = [...data.headers];
-    this._rows = [...data.rows];
+    this.#headers = [...data.headers];
+    this.#rows = [...data.rows];
   }
 
   /**
@@ -225,8 +226,8 @@ class Model {
    * @returns {void}
    */
   clear() {
-    this._headers = [];
-    this._rows = [];
+    this.#headers = [];
+    this.#rows = [];
   }
 
   /**
@@ -234,7 +235,7 @@ class Model {
    * @param {ParsedData} data
    * @returns {boolean}
    */
-  _validateData(data) {
+  #validateData(data) {
     if (!data || !Array.isArray(data.headers) || !Array.isArray(data.rows)) {
       console.error("Data structure invalid:", data);
       return false;
