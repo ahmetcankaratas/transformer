@@ -1,5 +1,4 @@
 class Model {
-  // Private fields
   #pdfLib;
   #XLSX;
   #headers = [];
@@ -81,11 +80,10 @@ class Model {
       .map((item) => item.str.trim())
       .filter((str) => str.length > 0);
 
-    // Group text items into rows based on their position
     const rows = this.#groupTextItemsByRows(items);
 
     // Determine headers (first row) and data rows
-    const headers = rows.length > 0 ? rows[0] : [];
+    const headers = rows.length > 0 ? rows[rows.length - 1] : [];
     const dataRows = rows.length > 1 ? rows.slice(1) : [];
 
     return { headers, rows: dataRows };
@@ -139,7 +137,6 @@ class Model {
           )
       )
       .map((row) => {
-        // Ensure each row has the same number of columns as headers
         const processedRow = [];
         for (let i = 0; i < maxCols; i++) {
           const cell =
@@ -178,10 +175,8 @@ class Model {
    * @returns {string[][]}
    */
   #groupTextItemsByRows(items) {
-    // This is a simplified approach - a more robust solution would use
-    // the y-coordinates from the PDF to determine rows
+    // simplified approach
 
-    // Guess the number of columns based on the first few items
     const columnCount = 7; // Assuming we have 7 columns
     const rows = [];
 
@@ -241,7 +236,7 @@ class Model {
       return false;
     }
 
-    // Ensure we have at least one header
+    // Ensure at least one header
     if (data.headers.length === 0) {
       console.error("No headers found");
       return false;

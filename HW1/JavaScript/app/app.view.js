@@ -1,5 +1,4 @@
 class View {
-  // Private fields
   #model;
   #scheduleContent;
   #fileInput;
@@ -10,7 +9,6 @@ class View {
 
   constructor(model) {
     this.#model = model;
-
     this.#scheduleContent = document.getElementById("scheduleContent");
     this.#fileInput = document.getElementById("fileInput");
     this.#uploadFeedback = document.getElementById("uploadFeedback");
@@ -38,13 +36,9 @@ class View {
    * @returns {void}
    */
   displaySchedule(file) {
-    // Clear loading state
     this.clearFeedback();
-
-    // Update file information
     this.showFileInfo(file);
 
-    // Render the table directly
     const tableHtml = this.renderTable();
     this.#scheduleContent.innerHTML = tableHtml;
   }

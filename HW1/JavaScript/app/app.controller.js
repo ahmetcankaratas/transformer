@@ -1,5 +1,4 @@
 class Controller {
-  // Private fields using proper # syntax
   #model;
   #view;
   #fileInput;
@@ -32,7 +31,6 @@ class Controller {
       this.#handleFileUpload()
     );
 
-    // Set up event listener for file info close button
     document
       .querySelector(".file-info .btn-close")
       .addEventListener("click", () => {
