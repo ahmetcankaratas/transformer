@@ -18,6 +18,7 @@ import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.apache.pdfbox.text.PDFTextStripperByArea;
 import java.awt.Rectangle;
+import org.apache.pdfbox.text.TextPosition;
 
 // Excel processing imports
 import org.apache.poi.ss.usermodel.Cell;
@@ -62,13 +63,26 @@ public class FileController {
             for (int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
                 String pageName = "Page " + (pageIndex + 1);
                 
-                // Extract text from the specific page
+                // Try to extract text using the improved region-based method
+                TableData tableFromRegions = extractTableByRegions(document, pageIndex, pageName);
+                if (tableFromRegions != null && !tableFromRegions.getRows().isEmpty()) {
+                    tableDataList.add(tableFromRegions);
+                    continue; // Skip other methods if region-based extraction was successful
+                }
+                
+                // If region-based extraction failed, fall back to text-based extraction
                 PDFTextStripper textStripper = new PDFTextStripper();
                 textStripper.setStartPage(pageIndex + 1);
                 textStripper.setEndPage(pageIndex + 1);
+                textStripper.setSortByPosition(true);
                 String pageText = textStripper.getText(document);
                 
-                // Try to process the page as a table
+                // Print extracted text to console
+                System.out.println("------- Extracted Text from " + pageName + " -------");
+                System.out.println(pageText);
+                System.out.println("-------------------------------------------");
+                
+                // Try to process the page as a table using text-based analysis
                 TableData pageTable = extractTableFromPage(pageText, pageName);
                 
                 // Only add if the table has content
@@ -112,6 +126,256 @@ public class FileController {
         }
         
         return tableDataList;
+    }
+    
+    /**
+     * Extract table using a region-based approach for better structure preservation
+     * @param document PDF document
+     * @param pageIndex Index of the page to process
+     * @param pageName Name of the page for table naming
+     * @return TableData object with extracted data
+     */
+    private TableData extractTableByRegions(PDDocument document, int pageIndex, String pageName) throws IOException {
+        TableData tableData = new TableData("Table from " + pageName);
+        
+        // Initialize text stripper for region extraction
+        PDFTextStripperByArea stripper = new PDFTextStripperByArea();
+        stripper.setSortByPosition(true);
+        
+        // Get page dimensions
+        org.apache.pdfbox.pdmodel.PDPage page = document.getPage(pageIndex);
+        float pageWidth = page.getMediaBox().getWidth();
+        float pageHeight = page.getMediaBox().getHeight();
+        
+        // Step 1: Analyze the page to detect potential table structure
+        List<Float> horizontalLines = detectHorizontalLines(document, pageIndex);
+        List<Float> verticalLines = detectVerticalLines(document, pageIndex);
+        
+        // If we couldn't detect proper lines, return null to fall back to text-based method
+        if (horizontalLines.size() < 2 || verticalLines.size() < 2) {
+            return null;
+        }
+        
+        // Step 2: Create a grid of regions based on the detected lines
+        List<List<String>> grid = extractTextFromGrid(document, pageIndex, horizontalLines, verticalLines);
+        
+        // Step 3: Process grid to create table data
+        if (!grid.isEmpty()) {
+            // Use first row as headers
+            List<String> headerRow = grid.get(0);
+            for (String header : headerRow) {
+                tableData.addHeader(header.trim().isEmpty() ? "Column" : header.trim());
+            }
+            
+            // Add data rows
+            for (int i = 1; i < grid.size(); i++) {
+                tableData.addRow(grid.get(i));
+            }
+        }
+        
+        return tableData;
+    }
+    
+    /**
+     * Detect horizontal lines that might represent row boundaries
+     * @param document PDF document
+     * @param pageIndex Index of the page to analyze
+     * @return List of y-coordinates of potential row boundaries
+     */
+    private List<Float> detectHorizontalLines(PDDocument document, int pageIndex) throws IOException {
+        List<Float> horizontalPositions = new ArrayList<>();
+        
+        // Get page dimensions
+        org.apache.pdfbox.pdmodel.PDPage page = document.getPage(pageIndex);
+        float pageHeight = page.getMediaBox().getHeight();
+        
+        // Extract text with position information to identify text lines
+        PDFTextStripper stripper = new PDFTextStripper() {
+            @Override
+            protected void writeString(String text, List<TextPosition> textPositions) throws IOException {
+                for (TextPosition position : textPositions) {
+                    float y = pageHeight - position.getY();
+                    // Add to positions if not already close to an existing position
+                    boolean isNew = true;
+                    for (Float existingY : horizontalPositions) {
+                        if (Math.abs(existingY - y) < 5) {
+                            isNew = false;
+                            break;
+                        }
+                    }
+                    if (isNew) {
+                        horizontalPositions.add(y);
+                    }
+                }
+            }
+        };
+        
+        stripper.setStartPage(pageIndex + 1);
+        stripper.setEndPage(pageIndex + 1);
+        stripper.setSortByPosition(true);
+        stripper.getText(document);
+        
+        // Sort positions to get them in order from top to bottom
+        horizontalPositions.sort((a, b) -> Float.compare(a, b));
+        
+        // Filter positions to get more distinct rows (remove positions that are too close)
+        List<Float> filteredPositions = new ArrayList<>();
+        if (!horizontalPositions.isEmpty()) {
+            filteredPositions.add(0f); // Add top of page
+            filteredPositions.add(horizontalPositions.get(0));
+            
+            for (int i = 1; i < horizontalPositions.size(); i++) {
+                float current = horizontalPositions.get(i);
+                float previous = horizontalPositions.get(i - 1);
+                
+                if (current - previous > 10) { // Minimum gap between rows
+                    filteredPositions.add(current);
+                }
+            }
+            
+            filteredPositions.add(pageHeight); // Add bottom of page
+        }
+        
+        return filteredPositions;
+    }
+    
+    /**
+     * Detect vertical lines that might represent column boundaries
+     * @param document PDF document
+     * @param pageIndex Index of the page to analyze
+     * @return List of x-coordinates of potential column boundaries
+     */
+    private List<Float> detectVerticalLines(PDDocument document, int pageIndex) throws IOException {
+        List<Float> verticalPositions = new ArrayList<>();
+        
+        // Extract text with position information to identify columns
+        PDFTextStripper stripper = new PDFTextStripper() {
+            @Override
+            protected void writeString(String text, List<TextPosition> textPositions) throws IOException {
+                for (TextPosition position : textPositions) {
+                    float x = position.getX();
+                    // Add position at start of text segment
+                    boolean startIsNew = true;
+                    for (Float existingX : verticalPositions) {
+                        if (Math.abs(existingX - x) < 10) {
+                            startIsNew = false;
+                            break;
+                        }
+                    }
+                    if (startIsNew) {
+                        verticalPositions.add(x);
+                    }
+                    
+                    // Add position at end of text segment
+                    float endX = x + position.getWidth();
+                    boolean endIsNew = true;
+                    for (Float existingX : verticalPositions) {
+                        if (Math.abs(existingX - endX) < 10) {
+                            endIsNew = false;
+                            break;
+                        }
+                    }
+                    if (endIsNew) {
+                        verticalPositions.add(endX);
+                    }
+                }
+            }
+        };
+        
+        stripper.setStartPage(pageIndex + 1);
+        stripper.setEndPage(pageIndex + 1);
+        stripper.setSortByPosition(true);
+        stripper.getText(document);
+        
+        // Sort positions to get them in order from left to right
+        verticalPositions.sort((a, b) -> Float.compare(a, b));
+        
+        // Filter positions to get more distinct columns
+        List<Float> filteredPositions = new ArrayList<>();
+        if (!verticalPositions.isEmpty()) {
+            filteredPositions.add(0f); // Add left edge of page
+            
+            for (int i = 0; i < verticalPositions.size(); i++) {
+                float current = verticalPositions.get(i);
+                
+                // Check if this position is significantly different from the last one added
+                if (filteredPositions.isEmpty() || 
+                    current - filteredPositions.get(filteredPositions.size() - 1) > 20) {
+                    filteredPositions.add(current);
+                }
+            }
+            
+            // Add right edge of page
+            org.apache.pdfbox.pdmodel.PDPage page = document.getPage(pageIndex);
+            filteredPositions.add(page.getMediaBox().getWidth());
+        }
+        
+        return filteredPositions;
+    }
+    
+    /**
+     * Extract text from grid cells created by intersection of horizontal and vertical lines
+     * @param document PDF document
+     * @param pageIndex Index of the page to process
+     * @param horizontalLines Y-coordinates of horizontal lines
+     * @param verticalLines X-coordinates of vertical lines
+     * @return 2D grid of extracted text
+     */
+    private List<List<String>> extractTextFromGrid(PDDocument document, int pageIndex, 
+                                                 List<Float> horizontalLines, 
+                                                 List<Float> verticalLines) throws IOException {
+        List<List<String>> grid = new ArrayList<>();
+        PDFTextStripperByArea stripper = new PDFTextStripperByArea();
+        stripper.setSortByPosition(true);
+        
+        org.apache.pdfbox.pdmodel.PDPage page = document.getPage(pageIndex);
+        float pageHeight = page.getMediaBox().getHeight();
+        
+        // Process each row
+        for (int row = 0; row < horizontalLines.size() - 1; row++) {
+            float yTop = pageHeight - horizontalLines.get(row + 1);
+            float yBottom = pageHeight - horizontalLines.get(row);
+            float height = Math.abs(yBottom - yTop);
+            
+            List<String> rowData = new ArrayList<>();
+            
+            // Process each column in the current row
+            for (int col = 0; col < verticalLines.size() - 1; col++) {
+                float xLeft = verticalLines.get(col);
+                float width = verticalLines.get(col + 1) - xLeft;
+                
+                // Region name unique to this cell
+                String regionName = "cell_" + row + "_" + col;
+                
+                // Define rectangle for this cell
+                Rectangle rect = new Rectangle((int)xLeft, (int)yTop, (int)width, (int)height);
+                stripper.addRegion(regionName, rect);
+                
+                // Extract text from this cell
+                stripper.extractRegions(page);
+                String cellText = stripper.getTextForRegion(regionName);
+                
+                rowData.add(cellText.trim());
+                
+                // Clear the region for the next cell
+                stripper.removeRegion(regionName);
+            }
+            
+            // Only add non-empty rows
+            boolean hasContent = false;
+            for (String cell : rowData) {
+                if (!cell.isEmpty()) {
+                    hasContent = true;
+                    break;
+                }
+            }
+            
+            if (hasContent) {
+                grid.add(rowData);
+            }
+        }
+        
+        return grid;
     }
     
     /**

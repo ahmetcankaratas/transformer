@@ -3,9 +3,6 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Model class for holding table data
- */
 public class TableData {
     private String tableName;
     private List<String> headers;
