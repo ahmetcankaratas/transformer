@@ -1,0 +1,6 @@
+CENG223; Tuesday; 09:45
+CENG223; Thursday; 09:45
+CENG334; Monday; 13:30
+CENG334; Wednesday; 13:30
+CENG436; Tuesday; 15:30
+CENG436; Thursday; 15:30 

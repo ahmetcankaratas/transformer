@@ -1,0 +1,6 @@
+PHOT101; Monday; 09:45
+PHOT101; Wednesday; 09:45
+PHOT201; Tuesday; 13:30
+PHOT201; Thursday; 13:30
+PHOT301; Monday; 15:30
+PHOT301; Wednesday; 15:30 
