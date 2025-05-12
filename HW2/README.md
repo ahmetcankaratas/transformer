@@ -19,6 +19,9 @@ A constraint-based weekly scheduling system for university courses that implemen
 └── web/                   # Web interface
     └── schedule_demo.html # Generated schedule view
 ```
+## Screenshots
+
+<img width="1085" alt="Screenshot 2025-05-12 at 11 34 10" src="https://github.com/user-attachments/assets/c5f56acc-1aa0-4afd-9034-fe3c18cb3eb9" />
 
 ## Design Patterns Implementation
 
