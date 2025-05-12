@@ -1,40 +1,49 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Schedule Demo - Undergraduate vs Graduate</title>
+<meta charset='UTF-8'>
+<title>Weekly Schedule</title>
 <style>
-body { font-family: Arial, sans-serif; margin: 20px; background-color: #f5f5f5; }
-.schedule-container { margin-bottom: 40px; background-color: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-h1 { color: #333; text-align: center; }
-h2 { color: #444; margin-bottom: 15px; }
-table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
-th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
-th { background-color: #4CAF50; color: white; }
-tr:nth-child(even) { background-color: #f9f9f9; }
-.course { padding: 8px; border-radius: 4px; color: white; font-weight: bold; margin-bottom: 4px; display: block; }
-.undergrad { background-color: #2196F3; }
-.grad { background-color: #9C27B0; }
-.constraints { background-color: #fff3cd; padding: 15px; border-radius: 4px; margin-top: 10px; }
-.constraints h3 { margin-top: 0; color: #856404; }
-.constraints ul { margin: 0; padding-left: 20px; }
-.professor { font-size: 0.8em; color: #666; margin-top: 4px; }
+body { font-family: Arial, sans-serif; background-color: #f7f7f7; margin: 0; padding: 0; }
+h2 { background-color: #0A1D37; color: white; text-align: center; padding: 20px 0; margin: 0; }
+.tab { display: flex; justify-content: center; background-color: #eee; }
+.tab button { background-color: transparent; border: none; padding: 14px 20px; cursor: pointer; font-size: 16px; color: #0A1D37; border-bottom: 3px solid transparent; transition: 0.3s; }
+.tab button:hover { border-bottom: 3px solid #8B0000; }
+.tab button.active { border-bottom: 3px solid #0A1D37; font-weight: bold; }
+.tabcontent { display: none; padding: 20px; }
+table { border-collapse: collapse; width: 100%; background-color: white; }
+th { background-color: #0A1D37; color: white; padding: 10px; }
+td { border: 1px solid #ddd; padding: 10px; text-align: center; min-height: 50px; }
+td:first-child { background-color: #f2f2f2; font-weight: bold; }
 </style>
+<script>
+function openTab(evt, tabName) {
+    var i, tabcontent, tablinks;
+    tabcontent = document.getElementsByClassName('tabcontent');
+    for (i = 0; i < tabcontent.length; i++) {
+        tabcontent[i].style.display = 'none';
+    }
+    tablinks = document.getElementsByClassName('tablink');
+    for (i = 0; i < tablinks.length; i++) {
+        tablinks[i].className = tablinks[i].className.replace(' active', '');
+    }
+    document.getElementById(tabName).style.display = 'block';
+    evt.currentTarget.className += ' active';
+}
+window.onload = function() { document.getElementById('defaultOpen').click(); };
+</script>
 </head>
 <body>
-<h1>University Course Schedule Demo</h1>
-<div class="schedule-container">
-<h2>Undergraduate Schedule (NoClashConstraint)</h2>
-<div class="constraints">
-<h3>Applied Constraints:</h3>
-<ul>
-<li>NoClashConstraint: Prevents scheduling conflicts between courses</li>
-<li>Validation Decorator: Validates course additions</li>
-<li>Logging Decorator: Tracks schedule modifications</li>
-</ul>
+<h2>Weekly Course Schedules for 2024–2025 Spring</h2>
+<div class='tab'>
+    <button class='tablink' id='defaultOpen' onclick="openTab(event, 'Undergrad')">Undergraduate</button>
+    <button class='tablink' onclick="openTab(event, 'Grad')">Graduate</button>
+    <button class='tablink' onclick="openTab(event, 'NonCENG')">Non-CENG</button>
 </div>
+<div id='Undergrad' class='tabcontent'>
 <table>
 <tr>
-<th>Time</th>
+<th>Hours</th>
 <th>MONDAY</th>
 <th>TUESDAY</th>
 <th>WEDNESDAY</th>
@@ -42,7 +51,7 @@ tr:nth-child(even) { background-color: #f9f9f9; }
 <th>FRIDAY</th>
 </tr>
 <tr>
-<td>08:00</td>
+<td>08:45–09:30</td>
 <td></td>
 <td></td>
 <td></td>
@@ -50,7 +59,15 @@ tr:nth-child(even) { background-color: #f9f9f9; }
 <td></td>
 </tr>
 <tr>
-<td>08:30</td>
+<td>09:45–10:30</td>
+<td><strong>CENG112</strong><br>OGokalp</td>
+<td><strong>CENG223</strong><br>KDemir</td>
+<td><strong>CENG112</strong><br>OGokalp</td>
+<td><strong>CENG223</strong><br>KDemir</td>
+<td></td>
+</tr>
+<tr>
+<td>10:45–11:30</td>
 <td></td>
 <td></td>
 <td></td>
@@ -58,7 +75,7 @@ tr:nth-child(even) { background-color: #f9f9f9; }
 <td></td>
 </tr>
 <tr>
-<td>09:00</td>
+<td>11:45–12:30</td>
 <td></td>
 <td></td>
 <td></td>
@@ -66,7 +83,15 @@ tr:nth-child(even) { background-color: #f9f9f9; }
 <td></td>
 </tr>
 <tr>
-<td>09:30</td>
+<td>13:30–14:15</td>
+<td><strong>CENG334</strong><br>KDemir</td>
+<td><strong>CENG335</strong><br>SSahin</td>
+<td><strong>CENG334</strong><br>KDemir</td>
+<td><strong>CENG335</strong><br>SSahin</td>
+<td></td>
+</tr>
+<tr>
+<td>14:30–15:15</td>
 <td></td>
 <td></td>
 <td></td>
@@ -74,7 +99,35 @@ tr:nth-child(even) { background-color: #f9f9f9; }
 <td></td>
 </tr>
 <tr>
-<td>10:00</td>
+<td>15:30–16:15</td>
+<td><strong>CENG435</strong><br>OGokalp</td>
+<td><strong>CENG436</strong><br>KDemir</td>
+<td><strong>CENG435</strong><br>OGokalp</td>
+<td><strong>CENG436</strong><br>KDemir</td>
+<td></td>
+</tr>
+<tr>
+<td>16:30–17:15</td>
+<td><strong>CENG433</strong><br>AYilmaz</td>
+<td></td>
+<td><strong>CENG433</strong><br>AYilmaz</td>
+<td></td>
+<td></td>
+</tr>
+</table>
+</div>
+<div id='Grad' class='tabcontent'>
+<table>
+<tr>
+<th>Hours</th>
+<th>MONDAY</th>
+<th>TUESDAY</th>
+<th>WEDNESDAY</th>
+<th>THURSDAY</th>
+<th>FRIDAY</th>
+</tr>
+<tr>
+<td>08:45–09:30</td>
 <td></td>
 <td></td>
 <td></td>
@@ -82,15 +135,7 @@ tr:nth-child(even) { background-color: #f9f9f9; }
 <td></td>
 </tr>
 <tr>
-<td>10:30</td>
-<td><span class="course undergrad">CENG213</span><div class="professor">Prof. AYilmaz</div></td>
-<td></td>
-<td><span class="course undergrad">CENG213</span><div class="professor">Prof. AYilmaz</div></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>11:00</td>
+<td>09:45–10:30</td>
 <td></td>
 <td></td>
 <td></td>
@@ -98,15 +143,7 @@ tr:nth-child(even) { background-color: #f9f9f9; }
 <td></td>
 </tr>
 <tr>
-<td>11:30</td>
-<td><span class="course undergrad">CENG233</span><div class="professor">Prof. SSahin</div></td>
-<td></td>
-<td><span class="course undergrad">CENG233</span><div class="professor">Prof. SSahin</div></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>12:00</td>
+<td>10:45–11:30</td>
 <td></td>
 <td></td>
 <td></td>
@@ -114,7 +151,7 @@ tr:nth-child(even) { background-color: #f9f9f9; }
 <td></td>
 </tr>
 <tr>
-<td>12:30</td>
+<td>11:45–12:30</td>
 <td></td>
 <td></td>
 <td></td>
@@ -122,7 +159,15 @@ tr:nth-child(even) { background-color: #f9f9f9; }
 <td></td>
 </tr>
 <tr>
-<td>13:00</td>
+<td>13:30–14:15</td>
+<td></td>
+<td><strong>CENG632</strong><br>OGokalp</td>
+<td></td>
+<td><strong>CENG632</strong><br>OGokalp</td>
+<td></td>
+</tr>
+<tr>
+<td>14:30–15:15</td>
 <td></td>
 <td></td>
 <td></td>
@@ -130,15 +175,7 @@ tr:nth-child(even) { background-color: #f9f9f9; }
 <td></td>
 </tr>
 <tr>
-<td>13:30</td>
-<td><span class="course undergrad">CENG334</span><div class="professor">Prof. KDemir</div></td>
-<td><span class="course undergrad">CENG335</span><div class="professor">Prof. SSahin</div></td>
-<td><span class="course undergrad">CENG334</span><div class="professor">Prof. KDemir</div></td>
-<td><span class="course undergrad">CENG335</span><div class="professor">Prof. SSahin</div></td>
-<td></td>
-</tr>
-<tr>
-<td>14:00</td>
+<td>15:30–16:15</td>
 <td></td>
 <td></td>
 <td></td>
@@ -146,87 +183,7 @@ tr:nth-child(even) { background-color: #f9f9f9; }
 <td></td>
 </tr>
 <tr>
-<td>14:30</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>15:00</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>15:30</td>
-<td><span class="course undergrad">CENG435</span><div class="professor">Prof. OGokalp</div></td>
-<td><span class="course undergrad">CENG436</span><div class="professor">Prof. KDemir</div></td>
-<td><span class="course undergrad">CENG435</span><div class="professor">Prof. OGokalp</div></td>
-<td><span class="course undergrad">CENG436</span><div class="professor">Prof. KDemir</div></td>
-<td></td>
-</tr>
-<tr>
-<td>16:00</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>16:30</td>
-<td><span class="course undergrad">CENG433</span><div class="professor">Prof. AYilmaz</div></td>
-<td></td>
-<td><span class="course undergrad">CENG433</span><div class="professor">Prof. AYilmaz</div></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>17:00</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>17:30</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>18:00</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>18:30</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>19:00</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>19:30</td>
+<td>16:30–17:15</td>
 <td></td>
 <td></td>
 <td></td>
@@ -235,20 +192,10 @@ tr:nth-child(even) { background-color: #f9f9f9; }
 </tr>
 </table>
 </div>
-<div class="schedule-container">
-<h2>Graduate Schedule (TimeWindowConstraint)</h2>
-<div class="constraints">
-<h3>Applied Constraints:</h3>
-<ul>
-<li>TimeWindowConstraint: Courses only between 9 AM - 5 PM</li>
-<li>CourseCodeValidationDecorator: Only CENG courses</li>
-<li>Validation Decorator: Validates time constraints</li>
-<li>Logging Decorator: Tracks schedule modifications</li>
-</ul>
-</div>
+<div id='NonCENG' class='tabcontent'>
 <table>
 <tr>
-<th>Time</th>
+<th>Hours</th>
 <th>MONDAY</th>
 <th>TUESDAY</th>
 <th>WEDNESDAY</th>
@@ -256,7 +203,7 @@ tr:nth-child(even) { background-color: #f9f9f9; }
 <th>FRIDAY</th>
 </tr>
 <tr>
-<td>08:00</td>
+<td>08:45–09:30</td>
 <td></td>
 <td></td>
 <td></td>
@@ -264,7 +211,15 @@ tr:nth-child(even) { background-color: #f9f9f9; }
 <td></td>
 </tr>
 <tr>
-<td>08:30</td>
+<td>09:45–10:30</td>
+<td><strong>PHOT101</strong><br>MTekin</td>
+<td></td>
+<td><strong>PHOT101</strong><br>MTekin</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>10:45–11:30</td>
 <td></td>
 <td></td>
 <td></td>
@@ -272,7 +227,7 @@ tr:nth-child(even) { background-color: #f9f9f9; }
 <td></td>
 </tr>
 <tr>
-<td>09:00</td>
+<td>11:45–12:30</td>
 <td></td>
 <td></td>
 <td></td>
@@ -280,7 +235,15 @@ tr:nth-child(even) { background-color: #f9f9f9; }
 <td></td>
 </tr>
 <tr>
-<td>09:30</td>
+<td>13:30–14:15</td>
+<td></td>
+<td><strong>PHOT201</strong><br>MTekin</td>
+<td></td>
+<td><strong>PHOT201</strong><br>MTekin</td>
+<td></td>
+</tr>
+<tr>
+<td>14:30–15:15</td>
 <td></td>
 <td></td>
 <td></td>
@@ -288,371 +251,15 @@ tr:nth-child(even) { background-color: #f9f9f9; }
 <td></td>
 </tr>
 <tr>
-<td>10:00</td>
+<td>15:30–16:15</td>
+<td><strong>PHOT301</strong><br>MTekin</td>
 <td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>10:30</td>
-<td></td>
-<td></td>
-<td></td>
+<td><strong>PHOT301</strong><br>MTekin</td>
 <td></td>
 <td></td>
 </tr>
 <tr>
-<td>11:00</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>11:30</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>12:00</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>12:30</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>13:00</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>13:30</td>
-<td></td>
-<td><span class="course grad">CENG632</span><div class="professor">Prof. OGokalp</div></td>
-<td></td>
-<td><span class="course grad">CENG632</span><div class="professor">Prof. OGokalp</div></td>
-<td></td>
-</tr>
-<tr>
-<td>14:00</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>14:30</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>15:00</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>15:30</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>16:00</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>16:30</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>17:00</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>17:30</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>18:00</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>18:30</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>19:00</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>19:30</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-</table>
-</div>
-<div class="schedule-container">
-<h2>Non-CENG Courses (Filtered by CourseCodeValidationDecorator)</h2>
-<div class="constraints">
-<h3>Applied Constraints:</h3>
-<ul>
-<li>CourseCodeValidationDecorator: Only CENG courses allowed</li>
-<li>These courses are filtered out by the decorator</li>
-</ul>
-</div>
-<table>
-<tr>
-<th>Time</th>
-<th>MONDAY</th>
-<th>TUESDAY</th>
-<th>WEDNESDAY</th>
-<th>THURSDAY</th>
-<th>FRIDAY</th>
-</tr>
-<tr>
-<td>08:00</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>08:30</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>09:00</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>09:30</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>10:00</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>10:30</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>11:00</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>11:30</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>12:00</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>12:30</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>13:00</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>13:30</td>
-<td></td>
-<td><span style="color: #666; text-decoration: line-through;">PHOT201</span><div class="professor">Prof. MTekin</div></td>
-<td></td>
-<td><span style="color: #666; text-decoration: line-through;">PHOT201</span><div class="professor">Prof. MTekin</div></td>
-<td></td>
-</tr>
-<tr>
-<td>14:00</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>14:30</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>15:00</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>15:30</td>
-<td><span style="color: #666; text-decoration: line-through;">PHOT301</span><div class="professor">Prof. MTekin</div></td>
-<td></td>
-<td><span style="color: #666; text-decoration: line-through;">PHOT301</span><div class="professor">Prof. MTekin</div></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>16:00</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>16:30</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>17:00</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>17:30</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>18:00</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>18:30</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>19:00</td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr>
-<td>19:30</td>
+<td>16:30–17:15</td>
 <td></td>
 <td></td>
 <td></td>
