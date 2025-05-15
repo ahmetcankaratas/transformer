@@ -12,6 +12,6 @@ public class DailyBalanceConstraint implements ConstraintStrategy {
                 dailyCourseCount++;
             }
         }
-        return dailyCourseCount < 3; // Günlük maksimum 2 ders olsun
+        return dailyCourseCount < 3;
     }
 }
