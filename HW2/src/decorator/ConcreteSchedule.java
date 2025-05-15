@@ -10,7 +10,7 @@ public class ConcreteSchedule implements ScheduleComponent {
     @Override
     public void addCourse(Course course) {
         courses.add(course);
-        System.out.println("Ders eklendi: " + course.getName());
+        System.out.println("Added course: " + course.getName());
     }
 
     @Override
